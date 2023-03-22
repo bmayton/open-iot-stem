@@ -301,7 +301,7 @@ void setup(void)
     u8g2.begin(); // OLED display init
     bt_init();    // BlE init
 
-    iaqSensor.begin(BME680_I2C_ADDR_PRIMARY, Wire);
+    iaqSensor.begin(BME68X_I2C_ADDR_LOW, Wire);
     output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
     Serial.println(output);
     checkIaqSensorStatus();
@@ -362,7 +362,7 @@ void loop(void)
         co2 = iaqSensor.co2Equivalent;
 
         sensordata1 = "1," + String(temp) + "," + String(hum, 1) + "," + String(pres, 1);
-        sensordata2 = "2," + String(iaqq, 0) + "," + String(co2, 0);
+        sensordata2 = "2," + String(iaqq, 2) + "," + String(co2, 2);
 
         //  Get a raw ADC reading
         vbat_mv = readVBAT();
@@ -518,34 +518,34 @@ void bme680_get()
 // Helper function definitions
 void checkIaqSensorStatus(void)
 {
-    if (iaqSensor.status != BSEC_OK)
+    if (iaqSensor.bsecStatus != BSEC_OK)
     {
-        if (iaqSensor.status < BSEC_OK)
+        if (iaqSensor.bsecStatus < BSEC_OK)
         {
-            output = "BSEC error code : " + String(iaqSensor.status);
+            output = "BSEC error code : " + String(iaqSensor.bsecStatus);
             Serial.println(output);
             for (;;)
                 errLeds(); /* Halt in case of failure */
         }
         else
         {
-            output = "BSEC warning code : " + String(iaqSensor.status);
+            output = "BSEC warning code : " + String(iaqSensor.bsecStatus);
             Serial.println(output);
         }
     }
 
-    if (iaqSensor.bme680Status != BME680_OK)
+    if (iaqSensor.bme68xStatus != BME68X_OK)
     {
-        if (iaqSensor.bme680Status < BME680_OK)
+        if (iaqSensor.bme68xStatus < BME68X_OK)
         {
-            output = "BME680 error code : " + String(iaqSensor.bme680Status);
+            output = "BME680 error code : " + String(iaqSensor.bme68xStatus);
             Serial.println(output);
             for (;;)
                 errLeds(); /* Halt in case of failure */
         }
         else
         {
-            output = "BME680 warning code : " + String(iaqSensor.bme680Status);
+            output = "BME680 warning code : " + String(iaqSensor.bme68xStatus);
             Serial.println(output);
         }
     }
@@ -593,4 +593,3 @@ void displaying()
 
     u8g2.sendBuffer(); // transfer internal memory to the display
 }
-
